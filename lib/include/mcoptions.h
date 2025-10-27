@@ -59,6 +59,21 @@ MCO_API double mco_lookback_call(mco_context_t* ctx, double spot, double strike,
                                 double rate, double volatility, double time_to_maturity,
                                 int fixed_strike);
 
+/* Bermudan Put */
+MCO_API double mco_bermudan_put(mco_context_t* ctx, double spot, double strike, 
+                                double rate, double volatility, 
+                                const double* exercise_dates, size_t num_dates);
+
+/* Barrier Put */
+MCO_API double mco_barrier_put(mco_context_t* ctx, double spot, double strike,
+                               double rate, double volatility, double time_to_maturity,
+                               double barrier_level, int barrier_type, double rebate);
+
+/* Lookback Put */
+MCO_API double mco_lookback_put(mco_context_t* ctx, double spot, double strike,
+                                double rate, double volatility, double time_to_maturity,
+                                int fixed_strike);
+
 // Model selection
 MCO_API void mco_context_set_model(mco_context_t* ctx, int model);  // 0=GBM, 1=SABR
 MCO_API void mco_context_set_sabr_params(mco_context_t* ctx, 
@@ -76,6 +91,7 @@ MCO_API double mco_european_call_fdm(mco_context_t* ctx, double spot, double str
 MCO_API double mco_european_call_tree(mco_context_t* ctx, double spot, double strike,
                                       double rate, double volatility, double time_to_maturity,
                                       int num_steps);
+
 
 
 #ifdef __cplusplus

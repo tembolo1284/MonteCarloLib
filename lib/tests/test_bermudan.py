@@ -79,3 +79,26 @@ def test_bermudan_atm(ctx):
     
     # Reasonable range for ATM call
     assert 7.0 < price < 11.0
+
+def test_bermudan_put_two_dates(ctx):
+    """Test Bermudan put with two exercise dates"""
+    ffi, mco, context = ctx
+    
+    exercise_dates = ffi.new("double[]", [0.5, 1.0])
+    price = mco.mco_bermudan_put(context, 100.0, 100.0, 0.05, 0.2, exercise_dates, 2)
+    
+    # Should be between European and American
+    european = mco.mco_european_put(context, 100.0, 100.0, 0.05, 0.2, 1.0)
+    american = mco.mco_american_put(context, 100.0, 100.0, 0.05, 0.2, 1.0, 50)
+    
+    assert european * 0.95 <= price <= american * 1.05
+
+def test_bermudan_put_itm(ctx):
+    """Test ITM Bermudan put"""
+    ffi, mco, context = ctx
+    
+    exercise_dates = ffi.new("double[]", [0.25, 0.5, 0.75, 1.0])
+    price = mco.mco_bermudan_put(context, 80.0, 100.0, 0.05, 0.2, exercise_dates, 4)
+    
+    # ITM put should have high value
+    assert price > 15.0

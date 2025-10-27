@@ -87,3 +87,21 @@ def test_lookback_high_volatility_impact(ctx):
     vanilla_increase = vanilla_high - vanilla_low
     
     assert lookback_increase > vanilla_increase
+
+def test_lookback_fixed_strike_put(ctx):
+    """Test fixed strike lookback put"""
+    ffi, mco, context = ctx
+    
+    price = mco.mco_lookback_put(context, 100.0, 100.0, 0.05, 0.2, 1.0, 1)
+    vanilla = mco.mco_european_put(context, 100.0, 100.0, 0.05, 0.2, 1.0)
+    
+    assert price > vanilla
+
+def test_lookback_floating_strike_put(ctx):
+    """Test floating strike lookback put"""
+    ffi, mco, context = ctx
+    
+    price = mco.mco_lookback_put(context, 100.0, 100.0, 0.05, 0.2, 1.0, 0)
+    
+    assert price > 0
+    assert price > 5.0

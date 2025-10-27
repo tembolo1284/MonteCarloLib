@@ -158,6 +158,38 @@ double mco_lookback_call(mco_context_t* ctx, double spot, double strike,
     return price_lookback_option(*context, option);
 }
 
+// Bermudan Put
+double mco_bermudan_put(mco_context_t* ctx, double spot, double strike, 
+                        double rate, double volatility, 
+                        const double* exercise_dates, size_t num_dates) {
+    Context* context = reinterpret_cast<Context*>(ctx);
+    std::vector<double> ex_dates(exercise_dates, exercise_dates + num_dates);
+    BermudanOptionData option{spot, strike, rate, volatility, ex_dates.back(),
+                             OptionType::Put, ex_dates};
+    return price_bermudan_option(*context, option);
+}
+
+// Barrier Put
+double mco_barrier_put(mco_context_t* ctx, double spot, double strike,
+                       double rate, double volatility, double time_to_maturity,
+                       double barrier_level, int barrier_type, double rebate) {
+    Context* context = reinterpret_cast<Context*>(ctx);
+    BarrierOptionData option{spot, strike, rate, volatility, time_to_maturity,
+                            OptionType::Put, barrier_level, 
+                            static_cast<BarrierType>(barrier_type), rebate};
+    return price_barrier_option(*context, option);
+}
+
+// Lookback Put
+double mco_lookback_put(mco_context_t* ctx, double spot, double strike,
+                        double rate, double volatility, double time_to_maturity,
+                        int fixed_strike) {
+    Context* context = reinterpret_cast<Context*>(ctx);
+    LookbackOptionData option{spot, strike, rate, volatility, time_to_maturity,
+                             OptionType::Put, static_cast<bool>(fixed_strike)};
+    return price_lookback_option(*context, option);
+}
+
 // Finite Difference Method (STUB)
 double mco_european_call_fdm(mco_context_t* ctx, double spot, double strike,
                              double rate, double volatility, double time_to_maturity) {

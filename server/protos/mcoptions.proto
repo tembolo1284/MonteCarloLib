@@ -1,0 +1,138 @@
+syntax = "proto3";
+
+package mcoptions;
+
+// Monte Carlo Options Pricing Service
+service McOptionsService {
+  // European Options
+  rpc PriceEuropeanCall(EuropeanRequest) returns (PriceResponse);
+  rpc PriceEuropeanPut(EuropeanRequest) returns (PriceResponse);
+  
+  // American Options
+  rpc PriceAmericanCall(AmericanRequest) returns (PriceResponse);
+  rpc PriceAmericanPut(AmericanRequest) returns (PriceResponse);
+  
+  // Asian Options
+  rpc PriceAsianCall(AsianRequest) returns (PriceResponse);
+  rpc PriceAsianPut(AsianRequest) returns (PriceResponse);
+  
+  // Barrier Options
+  rpc PriceBarrierCall(BarrierRequest) returns (PriceResponse);
+  rpc PriceBarrierPut(BarrierRequest) returns (PriceResponse);
+  
+  // Lookback Options
+  rpc PriceLookbackCall(LookbackRequest) returns (PriceResponse);
+  rpc PriceLookbackPut(LookbackRequest) returns (PriceResponse);
+  
+  // Bermudan Options
+  rpc PriceBermudanCall(BermudanRequest) returns (PriceResponse);
+  rpc PriceBermudanPut(BermudanRequest) returns (PriceResponse);
+  
+  // Batch pricing
+  rpc PriceBatch(BatchRequest) returns (BatchResponse);
+}
+
+// Simulation configuration
+message SimulationConfig {
+  uint64 num_simulations = 1;
+  uint64 num_steps = 2;
+  uint64 seed = 3;
+  bool antithetic_enabled = 4;
+  bool control_variates_enabled = 5;
+  bool stratified_sampling_enabled = 6;
+}
+
+// European option request
+message EuropeanRequest {
+  double spot = 1;
+  double strike = 2;
+  double rate = 3;
+  double volatility = 4;
+  double time_to_maturity = 5;
+  SimulationConfig config = 6;
+}
+
+// American option request
+message AmericanRequest {
+  double spot = 1;
+  double strike = 2;
+  double rate = 3;
+  double volatility = 4;
+  double time_to_maturity = 5;
+  uint32 num_exercise_points = 6;
+  SimulationConfig config = 7;
+}
+
+// Asian option request
+message AsianRequest {
+  double spot = 1;
+  double strike = 2;
+  double rate = 3;
+  double volatility = 4;
+  double time_to_maturity = 5;
+  uint32 num_observations = 6;
+  SimulationConfig config = 7;
+}
+
+// Barrier type enum
+enum BarrierType {
+  UP_AND_OUT = 0;
+  UP_AND_IN = 1;
+  DOWN_AND_OUT = 2;
+  DOWN_AND_IN = 3;
+}
+
+// Barrier option request
+message BarrierRequest {
+  double spot = 1;
+  double strike = 2;
+  double rate = 3;
+  double volatility = 4;
+  double time_to_maturity = 5;
+  double barrier_level = 6;
+  BarrierType barrier_type = 7;
+  double rebate = 8;
+  SimulationConfig config = 9;
+}
+
+// Lookback option request
+message LookbackRequest {
+  double spot = 1;
+  double strike = 2;
+  double rate = 3;
+  double volatility = 4;
+  double time_to_maturity = 5;
+  bool fixed_strike = 6;
+  SimulationConfig config = 7;
+}
+
+// Bermudan option request
+message BermudanRequest {
+  double spot = 1;
+  double strike = 2;
+  double rate = 3;
+  double volatility = 4;
+  repeated double exercise_dates = 5;
+  SimulationConfig config = 6;
+}
+
+// Single price response
+message PriceResponse {
+  double price = 1;
+  double computation_time_ms = 2;
+  string error_message = 3;
+}
+
+// Batch pricing request
+message BatchRequest {
+  repeated EuropeanRequest european_calls = 1;
+  repeated EuropeanRequest european_puts = 2;
+  SimulationConfig config = 3;
+}
+
+// Batch pricing response
+message BatchResponse {
+  repeated double european_call_prices = 1;
+  repeated double european_put_prices = 2;
+  double total_computation_time_ms = 3;
+}

@@ -92,3 +92,24 @@ def test_barrier_itm_vs_otm(ctx):
     otm = mco.mco_barrier_call(context, 80.0, 100.0, 0.05, 0.2, 1.0, 120.0, 0, 0.0)
     
     assert itm > otm
+
+def test_barrier_down_and_out_put(ctx):
+    """Test down-and-out barrier put"""
+    ffi, mco, context = ctx
+    
+    price = mco.mco_barrier_put(context, 100.0, 100.0, 0.05, 0.2, 1.0, 80.0, 2, 0.0)
+    vanilla = mco.mco_european_put(context, 100.0, 100.0, 0.05, 0.2, 1.0)
+    
+    assert price < vanilla
+    assert price > 0
+
+def test_barrier_put_in_out_parity(ctx):
+    """In and out barrier puts should sum to vanilla"""
+    ffi, mco, context = ctx
+    mco.mco_context_set_num_simulations(context, 100000)
+    
+    down_in = mco.mco_barrier_put(context, 100.0, 100.0, 0.05, 0.2, 1.0, 80.0, 3, 0.0)
+    down_out = mco.mco_barrier_put(context, 100.0, 100.0, 0.05, 0.2, 1.0, 80.0, 2, 0.0)
+    vanilla = mco.mco_european_put(context, 100.0, 100.0, 0.05, 0.2, 1.0)
+    
+    assert abs((down_in + down_out) - vanilla) / vanilla < 0.15
