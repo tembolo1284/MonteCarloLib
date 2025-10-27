@@ -88,38 +88,38 @@ double mco_european_put(mco_context_t* ctx, double spot, double strike,
 // Asian Options
 double mco_asian_arithmetic_call(mco_context_t* ctx, double spot, double strike,
                                   double rate, double volatility, double time_to_maturity,
-                                  int num_observations) {
+                                  size_t num_observations) {
     Context* context = reinterpret_cast<Context*>(ctx);
     AsianOptionData option{spot, strike, rate, volatility, time_to_maturity, 
-                          OptionType::Call, static_cast<size_t>(num_observations)};
+                          OptionType::Call, num_observations};
     return price_asian_option(*context, option);
 }
 
 double mco_asian_arithmetic_put(mco_context_t* ctx, double spot, double strike,
                                  double rate, double volatility, double time_to_maturity,
-                                 int num_observations) {
+                                 size_t num_observations) {
     Context* context = reinterpret_cast<Context*>(ctx);
     AsianOptionData option{spot, strike, rate, volatility, time_to_maturity,
-                          OptionType::Put, static_cast<size_t>(num_observations)};
+                          OptionType::Put, num_observations};
     return price_asian_option(*context, option);
 }
 
 // American Options
 double mco_american_call(mco_context_t* ctx, double spot, double strike,
                          double rate, double volatility, double time_to_maturity,
-                         int num_exercise_points) {
+                         size_t num_exercise_points) {
     Context* context = reinterpret_cast<Context*>(ctx);
     AmericanOptionData option{spot, strike, rate, volatility, time_to_maturity,
-                             OptionType::Call, static_cast<size_t>(num_exercise_points)};
+                             OptionType::Call, num_exercise_points};
     return price_american_option(*context, option);
 }
 
 double mco_american_put(mco_context_t* ctx, double spot, double strike,
                         double rate, double volatility, double time_to_maturity,
-                        int num_exercise_points) {
+                        size_t num_exercise_points) {
     Context* context = reinterpret_cast<Context*>(ctx);
     AmericanOptionData option{spot, strike, rate, volatility, time_to_maturity,
-                             OptionType::Put, static_cast<size_t>(num_exercise_points)};
+                             OptionType::Put, num_exercise_points};
     return price_american_option(*context, option);
 }
 

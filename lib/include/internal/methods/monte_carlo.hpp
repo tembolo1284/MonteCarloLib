@@ -1,8 +1,8 @@
 #ifndef MCOPTIONS_MONTE_CARLO_HPP
 #define MCOPTIONS_MONTE_CARLO_HPP
 
-#include "context.hpp"
-#include "instrument.hpp"
+#include "internal/context.hpp"
+#include "internal/instruments/instrument.hpp"
 #include <vector>
 
 namespace mcoptions {

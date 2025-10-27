@@ -2,6 +2,7 @@
 #define MCOPTIONS_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,17 +35,17 @@ MCO_API double mco_european_put(mco_context_t* ctx, double spot, double strike,
 
 MCO_API double mco_asian_arithmetic_call(mco_context_t* ctx, double spot, double strike,
                                           double rate, double volatility, double time_to_maturity,
-                                          int num_observations);
+                                          size_t num_observations);
 MCO_API double mco_asian_arithmetic_put(mco_context_t* ctx, double spot, double strike,
                                          double rate, double volatility, double time_to_maturity,
-                                         int num_observations);
+                                         size_t num_observations);
 
 MCO_API double mco_american_call(mco_context_t* ctx, double spot, double strike,
                                   double rate, double volatility, double time_to_maturity,
-                                  int num_exercise_points);
+                                  size_t num_exercise_points);
 MCO_API double mco_american_put(mco_context_t* ctx, double spot, double strike,
                                  double rate, double volatility, double time_to_maturity,
-                                 int num_exercise_points);
+                                 size_t num_exercise_points);
 
 MCO_API double mco_bermudan_call(mco_context_t* ctx, double spot, double strike, 
                                  double rate, double volatility, 
