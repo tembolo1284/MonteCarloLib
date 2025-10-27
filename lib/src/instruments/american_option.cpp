@@ -1,5 +1,5 @@
-#include "internal/american_option.hpp"
-#include "internal/monte_carlo.hpp"
+#include "internal/instruments/american_option.hpp"
+#include "internal/methods/monte_carlo.hpp"
 #include "internal/random.hpp"
 #include <cmath>
 #include <vector>

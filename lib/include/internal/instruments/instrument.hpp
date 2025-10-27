@@ -1,6 +1,9 @@
 #ifndef MCOPTIONS_INSTRUMENT_HPP
 #define MCOPTIONS_INSTRUMENT_HPP
 
+#include <algorithm>
+#include <cmath>
+
 namespace mcoptions {
 
 enum class OptionType {

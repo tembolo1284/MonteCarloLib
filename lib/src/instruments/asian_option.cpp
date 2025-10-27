@@ -1,5 +1,5 @@
-#include "internal/asian_option.hpp"
-#include "internal/monte_carlo.hpp"
+#include "internal/instruments/asian_option.hpp"
+#include "internal/methods/monte_carlo.hpp"
 #include "internal/random.hpp"
 #include <cmath>
 #include <numeric>

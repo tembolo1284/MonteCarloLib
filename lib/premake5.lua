@@ -18,9 +18,32 @@ project "mcoptions"
     objdir "build/obj"
     
     files {
-        "src/**.cpp",
+        -- Core
+        "src/api.cpp",
+        "src/context.cpp",
+        
+        -- Instruments
+        "src/instruments/**.cpp",
+        "include/internal/instruments/**.hpp",
+        
+        -- Models
+        "src/models/**.cpp",
+        "include/internal/models/**.hpp",
+        
+        -- Methods
+        "src/methods/**.cpp",
+        "include/internal/methods/**.hpp",
+        
+        -- Variance Reduction (when we add them)
+        "src/variance_reduction/**.cpp",
+        "include/internal/variance_reduction/**.hpp",
+        
+        -- Public headers
         "include/mcoptions.h",
-        "include/internal/**.hpp"
+        
+        -- Core utilities
+        "include/internal/context.hpp",
+        "include/internal/random.hpp"
     }
     
     includedirs {

@@ -1,8 +1,8 @@
 #ifndef MCOPTIONS_ASIAN_OPTION_HPP
 #define MCOPTIONS_ASIAN_OPTION_HPP
 
-#include "context.hpp"
-#include "instrument.hpp"
+#include "internal/context.hpp"
+#include "internal/instruments/instrument.hpp"
 
 namespace mcoptions {
 
