@@ -7,7 +7,7 @@
 namespace mcoptions {
 
 struct AmericanOptionData : OptionData {
-    int num_exercise_points;
+    size_t num_exercise_points;
 };
 
 double price_american_option(Context& ctx, const AmericanOptionData& option);

@@ -7,7 +7,7 @@
 namespace mcoptions {
 
 struct AsianOptionData : OptionData {
-    int num_observations;
+    size_t num_observations;
 };
 
 double price_asian_option(Context& ctx, const AsianOptionData& option);
