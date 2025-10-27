@@ -1,3 +1,5 @@
+// include/internal/context.hpp
+
 #ifndef MCOPTIONS_CONTEXT_HPP
 #define MCOPTIONS_CONTEXT_HPP
 
@@ -20,5 +22,4 @@ struct Context {
 };
 
 }
-
 #endif

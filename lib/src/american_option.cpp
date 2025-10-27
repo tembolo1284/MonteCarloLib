@@ -119,7 +119,7 @@ double price_american_option(Context& ctx, const AmericanOptionData& option) {
         sum_cashflows += cf;
     }
     
-    return discount_factor(option.rate, option.time_to_maturity) * (sum_cashflows / num_paths);
+    return std::exp(-option.rate * dt) * (sum_cashflows / num_paths);
 }
 
 }
