@@ -17,7 +17,6 @@ struct BermudanOptionData {
     std::vector<double> exercise_dates;
 };
 
-// TODO: Implement Bermudan option pricing
 double price_bermudan_option(Context& ctx, const BermudanOptionData& option);
 
 }

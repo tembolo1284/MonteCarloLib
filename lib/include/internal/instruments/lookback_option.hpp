@@ -16,7 +16,6 @@ struct LookbackOptionData {
     bool fixed_strike;  // true = fixed strike, false = floating strike
 };
 
-// TODO: Implement Lookback option pricing
 double price_lookback_option(Context& ctx, const LookbackOptionData& option);
 
 }

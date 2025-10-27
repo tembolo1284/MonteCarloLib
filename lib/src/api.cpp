@@ -3,6 +3,9 @@
 #include "internal/instruments/european_option.hpp"
 #include "internal/instruments/asian_option.hpp"
 #include "internal/instruments/american_option.hpp"
+#include "internal/instruments/bermudan_option.hpp"
+#include "internal/instruments/barrier_option.hpp"
+#include "internal/instruments/lookback_option.hpp"
 #include "internal/instruments/instrument.hpp"
 
 using namespace mcoptions;
@@ -123,25 +126,36 @@ double mco_american_put(mco_context_t* ctx, double spot, double strike,
     return price_american_option(*context, option);
 }
 
-// Bermudan Options (STUB)
+// Bermudan Options
 double mco_bermudan_call(mco_context_t* ctx, double spot, double strike, 
                          double rate, double volatility, 
                          const double* exercise_dates, size_t num_dates) {
-    return -1.0;  // Not implemented
+    Context* context = reinterpret_cast<Context*>(ctx);
+    std::vector<double> ex_dates(exercise_dates, exercise_dates + num_dates);
+    BermudanOptionData option{spot, strike, rate, volatility, ex_dates.back(),
+                             OptionType::Call, ex_dates};
+    return price_bermudan_option(*context, option);
 }
 
-// Barrier Options (STUB)
+// Barrier Options
 double mco_barrier_call(mco_context_t* ctx, double spot, double strike,
                         double rate, double volatility, double time_to_maturity,
                         double barrier_level, int barrier_type, double rebate) {
-    return -1.0;  // Not implemented
+    Context* context = reinterpret_cast<Context*>(ctx);
+    BarrierOptionData option{spot, strike, rate, volatility, time_to_maturity,
+                            OptionType::Call, barrier_level, 
+                            static_cast<BarrierType>(barrier_type), rebate};
+    return price_barrier_option(*context, option);
 }
 
-// Lookback Options (STUB)
+// Lookback Options
 double mco_lookback_call(mco_context_t* ctx, double spot, double strike,
                          double rate, double volatility, double time_to_maturity,
                          int fixed_strike) {
-    return -1.0;  // Not implemented
+    Context* context = reinterpret_cast<Context*>(ctx);
+    LookbackOptionData option{spot, strike, rate, volatility, time_to_maturity,
+                             OptionType::Call, static_cast<bool>(fixed_strike)};
+    return price_lookback_option(*context, option);
 }
 
 // Finite Difference Method (STUB)

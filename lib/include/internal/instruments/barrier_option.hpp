@@ -7,10 +7,10 @@
 namespace mcoptions {
 
 enum class BarrierType {
-    UpAndOut,
-    UpAndIn,
-    DownAndOut,
-    DownAndIn
+    UpAndOut = 0,
+    UpAndIn = 1,
+    DownAndOut = 2,
+    DownAndIn = 3
 };
 
 struct BarrierOptionData {
@@ -25,7 +25,6 @@ struct BarrierOptionData {
     double rebate;
 };
 
-// TODO: Implement Barrier option pricing
 double price_barrier_option(Context& ctx, const BarrierOptionData& option);
 
 }
