@@ -12,23 +12,6 @@ workspace "mcoptions_grpc"
         optimize "Speed"
         symbols "Off"
 
--- Helper function to generate proto files
-newaction {
-    trigger = "proto",
-    description = "Generate protobuf and gRPC code",
-    execute = function()
-        os.mkdir("generated")
-        
-        -- Generate C++ files
-        os.execute("protoc --cpp_out=generated --grpc_out=generated --plugin=protoc-gen-grpc=$(which grpc_cpp_plugin) -I protos protos/mcoptions.proto")
-        
-        -- Generate Python files
-        os.execute("python3 -m grpc_tools.protoc -I protos --python_out=generated --grpc_python_out=generated protos/mcoptions.proto")
-        
-        print("✓ Proto files generated in generated/")
-    end
-}
-
 project "mcoptions_server"
     kind "ConsoleApp"
     targetdir "build"

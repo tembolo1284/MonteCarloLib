@@ -14,6 +14,7 @@ DO_CLEAN=false
 DO_BUILD=false
 DO_RUN_SERVER=false
 DO_RUN_CLIENT=false
+DO_RUN_PYTHON=false
 CONFIG="release"
 
 print_header() {
@@ -48,6 +49,46 @@ print_usage() {
     echo ""
 }
 
+check_dependencies() {
+    echo -e "${YELLOW}>>> Checking dependencies...${NC}"
+    
+    local missing=false
+    
+    if ! command -v protoc &> /dev/null; then
+        echo -e "${RED}  ✗ protoc not found${NC}"
+        missing=true
+    else
+        echo -e "${GREEN}  ✓ protoc found${NC}"
+    fi
+    
+    if ! command -v grpc_cpp_plugin &> /dev/null; then
+        echo -e "${RED}  ✗ grpc_cpp_plugin not found${NC}"
+        missing=true
+    else
+        echo -e "${GREEN}  ✓ grpc_cpp_plugin found${NC}"
+    fi
+    
+    if ! python3 -c "import grpc_tools" 2>/dev/null; then
+        echo -e "${YELLOW}  ! Python grpcio-tools not found (optional for Python client)${NC}"
+    else
+        echo -e "${GREEN}  ✓ Python grpcio-tools found${NC}"
+    fi
+    
+    if [ "$missing" = true ]; then
+        echo ""
+        echo -e "${RED}Missing required dependencies!${NC}"
+        echo ""
+        echo "Install with:"
+        echo "  sudo apt install -y protobuf-compiler libprotobuf-dev"
+        echo "  sudo apt install -y libgrpc++-dev libgrpc-dev protobuf-compiler-grpc"
+        echo "  pip3 install grpcio grpcio-tools"
+        echo ""
+        exit 1
+    fi
+    
+    echo ""
+}
+
 do_clean() {
     echo -e "${YELLOW}>>> Cleaning build artifacts...${NC}"
     
@@ -71,7 +112,48 @@ do_clean() {
     echo ""
 }
 
+generate_protos() {
+    echo -e "${YELLOW}>>> Generating proto files...${NC}"
+    
+    # Create generated directory
+    mkdir -p generated
+    
+    # Generate C++ files
+    protoc \
+        --cpp_out=generated \
+        --grpc_out=generated \
+        --plugin=protoc-gen-grpc=$(which grpc_cpp_plugin) \
+        -I protos \
+        protos/mcoptions.proto
+    
+    if [ $? -eq 0 ]; then
+        echo "  ✓ C++ proto files generated"
+    else
+        echo -e "${RED}  ✗ Failed to generate C++ proto files${NC}"
+        exit 1
+    fi
+    
+    # Generate Python files
+    python3 -m grpc_tools.protoc \
+        -I protos \
+        --python_out=generated \
+        --grpc_python_out=generated \
+        protos/mcoptions.proto
+    
+    if [ $? -eq 0 ]; then
+        echo "  ✓ Python proto files generated"
+    else
+        echo -e "${YELLOW}  ! Failed to generate Python proto files (optional)${NC}"
+    fi
+    
+    echo -e "${GREEN}✓ Proto generation complete${NC}"
+    echo ""
+}
+
 do_build() {
+    # Check dependencies first
+    check_dependencies
+    
     # Build the main library first
     echo -e "${YELLOW}>>> Building Monte Carlo library...${NC}"
     cd ../lib
@@ -81,10 +163,7 @@ do_build() {
     echo ""
     
     # Generate proto files
-    echo -e "${YELLOW}>>> Generating proto files...${NC}"
-    premake5 proto
-    echo -e "${GREEN}✓ Proto files generated${NC}"
-    echo ""
+    generate_protos
     
     # Generate build files
     echo -e "${YELLOW}>>> Generating build files...${NC}"
@@ -92,11 +171,14 @@ do_build() {
     echo -e "${GREEN}✓ Build files generated${NC}"
     echo ""
     
+    # Determine the full config name (premake adds platform suffix)
+    local make_config="${CONFIG}_x64"
+    
     # Build
     echo -e "${YELLOW}>>> Building server and client...${NC}"
     echo -e "${BLUE}Compiler: gcc (gcc / g++)${NC}"
-    echo -e "${BLUE}Config:   ${CONFIG}${NC}"
-    make -j$(nproc) config=${CONFIG}
+    echo -e "${BLUE}Config:   ${make_config}${NC}"
+    make -j$(nproc) config=${make_config}
     echo -e "${GREEN}✓ Build complete!${NC}"
     echo ""
     
@@ -136,6 +218,8 @@ do_run_server() {
     echo -e "${YELLOW}Press Ctrl+C to stop the server${NC}"
     echo ""
     
+    # Set library path to include our library
+    export LD_LIBRARY_PATH="$(pwd)/../lib/build:$LD_LIBRARY_PATH"
     ./build/mcoptions_server
 }
 
@@ -150,6 +234,8 @@ do_run_client() {
     echo -e "${GREEN}============================================${NC}"
     echo ""
     
+    # Set library path to include our library
+    export LD_LIBRARY_PATH="$(pwd)/../lib/build:$LD_LIBRARY_PATH"
     ./build/mcoptions_client
     
     echo ""
@@ -174,6 +260,8 @@ do_run_python() {
         echo ""
     fi
     
+    # Set PYTHONPATH to include generated files
+    export PYTHONPATH="$(pwd)/generated:$PYTHONPATH"
     python3 client/python_client.py
     
     echo ""
