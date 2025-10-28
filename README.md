@@ -281,12 +281,6 @@ cd server
 
 ---
 
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
 ## Academic Reference
 
 If you use this library in academic work, please consider citing:
