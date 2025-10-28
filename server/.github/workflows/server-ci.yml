@@ -1,0 +1,98 @@
+name: Server CI
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'server/**'
+      - 'lib/**'
+      - '.github/workflows/server-ci.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'server/**'
+      - 'lib/**'
+
+jobs:
+  test:
+    name: Test gRPC Server
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/pip
+          /var/cache/apt
+        key: ${{ runner.os }}-deps-${{ hashFiles('**/requirements.txt') }}
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          premake5 \
+          protobuf-compiler \
+          libprotobuf-dev \
+          libgrpc++-dev \
+          libgrpc-dev \
+          protobuf-compiler-grpc \
+          python3 \
+          python3-pip
+        pip3 install grpcio grpcio-tools
+    
+    - name: Build library (dependency)
+      working-directory: ./lib
+      run: |
+        chmod +x build.sh
+        ./build.sh --build
+    
+    - name: Build server
+      working-directory: ./server
+      run: |
+        chmod +x build.sh
+        ./build.sh --build
+    
+    - name: Start server and test
+      working-directory: ./server
+      run: |
+        export LD_LIBRARY_PATH="$(pwd)/../lib/build:$LD_LIBRARY_PATH"
+        
+        # Start server
+        ./build/mcoptions_server &
+        SERVER_PID=$!
+        sleep 5
+        
+        # Run tests
+        ./build/mcoptions_client --european-call --spot 100 --strike 100
+        
+        # Cleanup
+        kill $SERVER_PID
+    
+    - name: Test Python client
+      working-directory: ./server
+      run: |
+        export LD_LIBRARY_PATH="$(pwd)/../lib/build:$LD_LIBRARY_PATH"
+        
+        # Start server
+        ./build/mcoptions_server &
+        SERVER_PID=$!
+        sleep 5
+        
+        # Run Python client
+        python3 client/python_client.py
+        
+        # Cleanup
+        kill $SERVER_PID
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: server-binaries
+        path: |
+          server/build/mcoptions_server
+          server/build/mcoptions_client

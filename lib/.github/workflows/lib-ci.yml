@@ -1,0 +1,63 @@
+name: Library CI
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'lib/**'
+      - '.github/workflows/lib-ci.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'lib/**'
+
+jobs:
+  test:
+    name: Test Library
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-22.04]
+        compiler: [gcc, clang]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential premake5 python3 python3-pip
+        pip3 install pytest cffi
+    
+    - name: Set compiler
+      run: |
+        if [ "${{ matrix.compiler }}" = "clang" ]; then
+          echo "CC=clang" >> $GITHUB_ENV
+          echo "CXX=clang++" >> $GITHUB_ENV
+        fi
+    
+    - name: Build library
+      working-directory: ./lib
+      run: |
+        chmod +x build.sh
+        ./build.sh --build
+    
+    - name: Run tests
+      working-directory: ./lib
+      run: |
+        ./build.sh --test
+    
+    - name: Test different configurations
+      working-directory: ./lib
+      run: |
+        ./build.sh --clean
+        ./build.sh --build --config debug
+        ./build.sh --test
+    
+    - name: Upload coverage (optional)
+      if: matrix.compiler == 'gcc' && matrix.os == 'ubuntu-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: library-artifact
+        path: lib/build/
