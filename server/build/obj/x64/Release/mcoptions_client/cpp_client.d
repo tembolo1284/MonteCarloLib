@@ -417,8 +417,10 @@ build/obj/x64/Release/mcoptions_client/cpp_client.o: \
  /usr/include/grpcpp/impl/codegen/proto_buffer_writer.h \
  /usr/include/grpcpp/impl/codegen/server_callback.h \
  /usr/include/grpcpp/impl/codegen/stub_options.h \
- /usr/include/grpcpp/impl/codegen/sync_stream.h \
- /usr/include/c++/11/iomanip /usr/include/c++/11/locale \
+ /usr/include/grpcpp/impl/codegen/sync_stream.h client/client_core.hpp \
+ client/interactive_menu.hpp client/option_pricers.hpp \
+ client/input_utils.hpp /usr/include/c++/11/iomanip \
+ /usr/include/c++/11/locale \
  /usr/include/c++/11/bits/locale_facets_nonio.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h \
@@ -426,7 +428,7 @@ build/obj/x64/Release/mcoptions_client/cpp_client.o: \
  /usr/include/c++/11/bits/locale_facets_nonio.tcc \
  /usr/include/c++/11/bits/locale_conv.h \
  /usr/include/c++/11/bits/quoted_string.h /usr/include/c++/11/sstream \
- /usr/include/c++/11/bits/sstream.tcc
+ /usr/include/c++/11/bits/sstream.tcc client/cli_parser.hpp
 /usr/include/stdc-predef.h:
 /usr/include/grpcpp/grpcpp.h:
 /usr/include/grpc/grpc.h:
@@ -919,6 +921,10 @@ generated/mcoptions.pb.h:
 /usr/include/grpcpp/impl/codegen/server_callback.h:
 /usr/include/grpcpp/impl/codegen/stub_options.h:
 /usr/include/grpcpp/impl/codegen/sync_stream.h:
+client/client_core.hpp:
+client/interactive_menu.hpp:
+client/option_pricers.hpp:
+client/input_utils.hpp:
 /usr/include/c++/11/iomanip:
 /usr/include/c++/11/locale:
 /usr/include/c++/11/bits/locale_facets_nonio.h:
@@ -931,3 +937,4 @@ generated/mcoptions.pb.h:
 /usr/include/c++/11/bits/quoted_string.h:
 /usr/include/c++/11/sstream:
 /usr/include/c++/11/bits/sstream.tcc:
+client/cli_parser.hpp:

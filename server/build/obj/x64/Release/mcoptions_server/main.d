@@ -418,7 +418,17 @@ build/obj/x64/Release/mcoptions_server/main.o: server/main.cpp \
  /usr/include/grpcpp/impl/codegen/server_callback.h \
  /usr/include/grpcpp/impl/codegen/stub_options.h \
  /usr/include/grpcpp/impl/codegen/sync_stream.h \
- ../lib/include/mcoptions.h
+ ../lib/include/mcoptions.h server/logging.hpp \
+ /usr/include/c++/11/iomanip /usr/include/c++/11/locale \
+ /usr/include/c++/11/bits/locale_facets_nonio.h \
+ /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
+ /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h \
+ /usr/include/libintl.h /usr/include/c++/11/bits/codecvt.h \
+ /usr/include/c++/11/bits/locale_facets_nonio.tcc \
+ /usr/include/c++/11/bits/locale_conv.h \
+ /usr/include/c++/11/bits/quoted_string.h /usr/include/c++/11/sstream \
+ /usr/include/c++/11/bits/sstream.tcc server/request_handlers.hpp \
+ /usr/include/c++/11/csignal
 /usr/include/stdc-predef.h:
 server/mcoptions_service.hpp:
 /usr/include/grpcpp/grpcpp.h:
@@ -913,3 +923,18 @@ generated/mcoptions.pb.h:
 /usr/include/grpcpp/impl/codegen/stub_options.h:
 /usr/include/grpcpp/impl/codegen/sync_stream.h:
 ../lib/include/mcoptions.h:
+server/logging.hpp:
+/usr/include/c++/11/iomanip:
+/usr/include/c++/11/locale:
+/usr/include/c++/11/bits/locale_facets_nonio.h:
+/usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h:
+/usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h:
+/usr/include/libintl.h:
+/usr/include/c++/11/bits/codecvt.h:
+/usr/include/c++/11/bits/locale_facets_nonio.tcc:
+/usr/include/c++/11/bits/locale_conv.h:
+/usr/include/c++/11/bits/quoted_string.h:
+/usr/include/c++/11/sstream:
+/usr/include/c++/11/bits/sstream.tcc:
+server/request_handlers.hpp:
+/usr/include/c++/11/csignal:

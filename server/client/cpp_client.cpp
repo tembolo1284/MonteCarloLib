@@ -1,108 +1,36 @@
 #include <grpcpp/grpcpp.h>
 #include "mcoptions.grpc.pb.h"
-#include <iostream>
-#include <memory>
-#include <iomanip>
-
-using grpc::Channel;
-using grpc::ClientContext;
-using grpc::Status;
-
-class McOptionsClient {
-public:
-    McOptionsClient(std::shared_ptr<Channel> channel)
-        : stub_(mcoptions::McOptionsService::NewStub(channel)) {}
-    
-    void PriceEuropeanCall(double spot, double strike, double rate,
-                          double volatility, double time_to_maturity) {
-        mcoptions::EuropeanRequest request;
-        request.set_spot(spot);
-        request.set_strike(strike);
-        request.set_rate(rate);
-        request.set_volatility(volatility);
-        request.set_time_to_maturity(time_to_maturity);
-        
-        auto* config = request.mutable_config();
-        config->set_num_simulations(100000);
-        config->set_num_steps(252);
-        config->set_antithetic_enabled(true);
-        config->set_control_variates_enabled(true);
-        
-        mcoptions::PriceResponse response;
-        ClientContext context;
-        
-        Status status = stub_->PriceEuropeanCall(&context, request, &response);
-        
-        if (status.ok()) {
-            std::cout << "  European Call: $" << std::fixed << std::setprecision(4)
-                     << response.price() << " (" << response.computation_time_ms() << "ms)" 
-                     << std::endl;
-        } else {
-            std::cout << "  RPC failed: " << status.error_message() << std::endl;
-        }
-    }
-    
-    void PriceAmericanPut(double spot, double strike, double rate,
-                         double volatility, double time_to_maturity) {
-        mcoptions::AmericanRequest request;
-        request.set_spot(spot);
-        request.set_strike(strike);
-        request.set_rate(rate);
-        request.set_volatility(volatility);
-        request.set_time_to_maturity(time_to_maturity);
-        request.set_num_exercise_points(50);
-        
-        auto* config = request.mutable_config();
-        config->set_num_simulations(50000);
-        config->set_num_steps(252);
-        
-        mcoptions::PriceResponse response;
-        ClientContext context;
-        
-        Status status = stub_->PriceAmericanPut(&context, request, &response);
-        
-        if (status.ok()) {
-            std::cout << "  American Put:  $" << std::fixed << std::setprecision(4)
-                     << response.price() << " (" << response.computation_time_ms() << "ms)" 
-                     << std::endl;
-        } else {
-            std::cout << "  RPC failed: " << status.error_message() << std::endl;
-        }
-    }
-    
-private:
-    std::unique_ptr<mcoptions::McOptionsService::Stub> stub_;
-};
+#include "client_core.hpp"
+#include "interactive_menu.hpp"
+#include "cli_parser.hpp"
 
 int main(int argc, char** argv) {
     std::string server_address = "localhost:50051";
     
-    if (argc > 1) {
+    // Check if first argument is a server address (contains ':')
+    int arg_offset = 1;
+    if (argc > 1 && std::string(argv[1]).find(':') != std::string::npos) {
         server_address = argv[1];
+        arg_offset = 2;
     }
     
-    McOptionsClient client(
-        grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()));
+    // Create client
+    auto channel = grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials());
+    McOptionsClient client(channel, server_address);
     
-    std::cout << "============================================" << std::endl;
-    std::cout << "  Monte Carlo Options Pricing Client" << std::endl;
-    std::cout << "============================================" << std::endl;
-    std::cout << "Connecting to: " << server_address << std::endl;
-    std::cout << std::endl;
+    // If no additional arguments, run interactive mode
+    if (argc <= arg_offset) {
+        interactive::run_interactive_mode(client);
+        return 0;
+    }
     
-    // Example 1: ATM Options
-    std::cout << "Pricing ATM options (S=100, K=100, r=5%, σ=20%, T=1y):" << std::endl;
-    client.PriceEuropeanCall(100.0, 100.0, 0.05, 0.2, 1.0);
-    client.PriceAmericanPut(100.0, 100.0, 0.05, 0.2, 1.0);
+    // CLI mode - parse and execute
+    cli::CliOptions opts;
+    if (!cli::parse_args(argc, argv, arg_offset, opts)) {
+        return 1;
+    }
     
-    std::cout << std::endl;
-    
-    // Example 2: ITM Options
-    std::cout << "Pricing ITM options (S=120, K=100, r=5%, σ=20%, T=1y):" << std::endl;
-    client.PriceEuropeanCall(120.0, 100.0, 0.05, 0.2, 1.0);
-    
-    std::cout << std::endl;
-    std::cout << "============================================" << std::endl;
+    cli::execute_cli_request(client, opts);
     
     return 0;
 }
