@@ -44,6 +44,10 @@ project "mcoptions_server"
         "grpc",
         "gpr",
         "protobuf",
+        "absl_synchronization",
+        "absl_strings",
+        "absl_base",
+        "absl_time",
         "pthread",
         "dl"
     }
@@ -79,6 +83,10 @@ project "mcoptions_client"
         "grpc",
         "gpr",
         "protobuf",
+        "absl_synchronization",
+        "absl_strings",
+        "absl_base",
+        "absl_time",
         "pthread",
         "dl"
     }
