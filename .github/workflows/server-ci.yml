@@ -25,7 +25,6 @@ jobs:
       with:
         path: |
           ~/.cache/pip
-          /var/cache/apt
         key: ${{ runner.os }}-deps-${{ hashFiles('**/requirements.txt') }}
     
     - name: Install premake5
