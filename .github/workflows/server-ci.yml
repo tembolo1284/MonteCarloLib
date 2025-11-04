@@ -61,6 +61,15 @@ jobs:
         chmod +x build.sh
         ./build.sh --build
     
+    - name: Generate Python protobuf files
+      working-directory: ./server
+      run: |
+        python3 -m grpc_tools.protoc \
+          -I./protos \
+          --python_out=./client \
+          --grpc_python_out=./client \
+          ./protos/mcoptions.proto
+    
     - name: Start server and test
       working-directory: ./server
       run: |
@@ -74,8 +83,10 @@ jobs:
         # Run tests
         ./build/mcoptions_client --european-call --spot 100 --strike 100
         
-        # Cleanup
-        kill $SERVER_PID
+        # Cleanup with timeout to avoid deadlock issues
+        kill $SERVER_PID || true
+        sleep 2
+        kill -9 $SERVER_PID 2>/dev/null || true
     
     - name: Test Python client
       working-directory: ./server
@@ -90,8 +101,10 @@ jobs:
         # Run Python client
         python3 client/python_client.py
         
-        # Cleanup
-        kill $SERVER_PID
+        # Cleanup with timeout to avoid deadlock issues
+        kill $SERVER_PID || true
+        sleep 2
+        kill -9 $SERVER_PID 2>/dev/null || true
     
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
