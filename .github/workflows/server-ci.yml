@@ -1,5 +1,4 @@
 name: Server CI
-
 on:
   push:
     branches: [ main, develop ]
@@ -12,7 +11,6 @@ on:
     paths:
       - 'server/**'
       - 'lib/**'
-
 jobs:
   test:
     name: Test gRPC Server
@@ -30,12 +28,18 @@ jobs:
           /var/cache/apt
         key: ${{ runner.os }}-deps-${{ hashFiles('**/requirements.txt') }}
     
+    - name: Install premake5
+      run: |
+        wget https://github.com/premake/premake-core/releases/download/v5.0.0-beta2/premake-5.0.0-beta2-linux.tar.gz
+        tar -xzf premake-5.0.0-beta2-linux.tar.gz
+        sudo mv premake5 /usr/local/bin/
+        premake5 --version
+    
     - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y \
           build-essential \
-          premake5 \
           protobuf-compiler \
           libprotobuf-dev \
           libgrpc++-dev \
