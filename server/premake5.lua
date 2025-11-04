@@ -42,6 +42,7 @@ project "mcoptions_server"
         "mcoptions",
         "grpc++",
         "grpc",
+        "gpr",
         "protobuf",
         "pthread",
         "dl"
@@ -76,6 +77,7 @@ project "mcoptions_client"
     links {
         "grpc++",
         "grpc",
+        "gpr",
         "protobuf",
         "pthread",
         "dl"
