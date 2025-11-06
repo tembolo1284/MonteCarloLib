@@ -8,6 +8,7 @@
 #include "internal/instruments/barrier_option.hpp"
 #include "internal/instruments/lookback_option.hpp"
 #include "internal/instruments/instrument.hpp"
+#include "internal/methods/binomial_tree.hpp"
 
 using namespace mcoptions;
 
@@ -268,7 +269,6 @@ double mco_binomial_american_put(
     return mco_binomial_american_put_steps(ctx, spot, strike, rate, volatility, time_to_maturity, steps);
 }
 
-// The _steps versions - these are the actual implementations (currently stubs)
 double mco_binomial_european_call_steps(
     mco_context_t* ctx,
     double spot,
@@ -278,8 +278,9 @@ double mco_binomial_european_call_steps(
     double time_to_maturity,
     size_t num_steps
 ) {
-    // TODO: Implement binomial tree pricing
-    return -1.0;  // Not implemented yet
+    Context* context = reinterpret_cast<Context*>(ctx);
+    OptionData option{spot, strike, rate, volatility, time_to_maturity, OptionType::Call};
+    return price_european_option_binomial(*context, option, num_steps);
 }
 
 double mco_binomial_european_put_steps(
@@ -291,8 +292,9 @@ double mco_binomial_european_put_steps(
     double time_to_maturity,
     size_t num_steps
 ) {
-    // TODO: Implement binomial tree pricing
-    return -1.0;  // Not implemented yet
+    Context* context = reinterpret_cast<Context*>(ctx);
+    OptionData option{spot, strike, rate, volatility, time_to_maturity, OptionType::Put};
+    return price_european_option_binomial(*context, option, num_steps);
 }
 
 double mco_binomial_american_call_steps(
@@ -304,8 +306,9 @@ double mco_binomial_american_call_steps(
     double time_to_maturity,
     size_t num_steps
 ) {
-    // TODO: Implement binomial tree pricing
-    return -1.0;  // Not implemented yet
+    Context* context = reinterpret_cast<Context*>(ctx);
+    OptionData option{spot, strike, rate, volatility, time_to_maturity, OptionType::Call};
+    return price_american_option_binomial(*context, option, num_steps);
 }
 
 double mco_binomial_american_put_steps(
@@ -317,8 +320,9 @@ double mco_binomial_american_put_steps(
     double time_to_maturity,
     size_t num_steps
 ) {
-    // TODO: Implement binomial tree pricing
-    return -1.0;  // Not implemented yet
+    Context* context = reinterpret_cast<Context*>(ctx);
+    OptionData option{spot, strike, rate, volatility, time_to_maturity, OptionType::Put};
+    return price_american_option_binomial(*context, option, num_steps);
 }
 
 // ============================================================================
