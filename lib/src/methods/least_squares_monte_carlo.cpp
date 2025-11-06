@@ -382,7 +382,7 @@ double price_american_option_lsm(
     const OptionData& option,
     size_t num_exercise_dates
 ) {
-    if (option.is_call) {
+    if (option.type == OptionType::Call) {
         return price_american_call_lsm(ctx, option, num_exercise_dates);
     } else {
         return price_american_put_lsm(ctx, option, num_exercise_dates);

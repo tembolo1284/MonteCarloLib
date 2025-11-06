@@ -8,15 +8,16 @@
 namespace mcoptions {
 
 double price_american_option(Context& ctx, const AmericanOptionData& option) {
-    size_t num_paths = ctx.num_simulations;
+    size_t num_paths = ctx.get_num_simulations();
     size_t num_exercise = option.num_exercise_points;
+    size_t num_steps = ctx.get_num_steps();
     
     std::vector<std::vector<double>> all_paths(num_paths);
     
     for (size_t i = 0; i < num_paths; ++i) {
-        auto normals = generate_normal_samples(ctx.rng, ctx.num_steps);
+        auto normals = generate_normal_samples(ctx.get_rng(), num_steps);
         all_paths[i] = simulate_gbm_path(ctx, option.spot, option.rate, option.volatility,
-                                          option.time_to_maturity, ctx.num_steps, normals);
+                                          option.time_to_maturity, num_steps, normals);
     }
     
     double dt = option.time_to_maturity / num_exercise;
@@ -28,7 +29,7 @@ double price_american_option(Context& ctx, const AmericanOptionData& option) {
     }
     
     for (int t = num_exercise - 1; t >= 1; --t) {
-        size_t step_idx = (t * ctx.num_steps) / num_exercise;
+        size_t step_idx = (t * num_steps) / num_exercise;
         
         std::vector<double> X, Y;
         for (size_t i = 0; i < num_paths; ++i) {

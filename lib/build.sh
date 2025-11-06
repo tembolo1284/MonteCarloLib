@@ -24,11 +24,12 @@ OPTIONS:
     -h, --help           Show this help message
 
 TEST FILES:
-    test_european        Run European option tests
-    test_asian           Run Asian option tests
-    test_american        Run American option tests
-    test_variance_reduction  Run variance reduction tests
-
+    test_european             Run European option tests
+    test_asian                Run Asian option tests
+    test_american             Run American option tests
+    test_binomial_tree        Run binomial tree pricing tests
+    test_american_comparison  Run American option method comparison tests
+    test_variance_reduction   Run variance reduction tests
 EXAMPLES:
     ./build.sh --all
     ./build.sh --clean --build

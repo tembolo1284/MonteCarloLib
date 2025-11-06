@@ -9,12 +9,12 @@ namespace mcoptions {
 double price_barrier_option(Context& ctx, const BarrierOptionData& option) {
     double sum_payoff = 0.0;
     
-    size_t effective_paths = ctx.antithetic_enabled ? ctx.num_simulations / 2 : ctx.num_simulations;
+    size_t effective_paths = ctx.get_antithetic() ? ctx.get_num_simulations() / 2 : ctx.get_num_simulations();
     
     for (size_t i = 0; i < effective_paths; ++i) {
-        auto normals = generate_normal_samples(ctx.rng, ctx.num_steps);
+        auto normals = generate_normal_samples(ctx.get_rng(), ctx.get_num_steps());
         auto path = simulate_gbm_path(ctx, option.spot, option.rate, option.volatility,
-                                       option.time_to_maturity, ctx.num_steps, normals);
+                                       option.time_to_maturity, ctx.get_num_steps(), normals);
         
         // Check if barrier was hit
         bool barrier_hit = false;
@@ -60,10 +60,10 @@ double price_barrier_option(Context& ctx, const BarrierOptionData& option) {
         sum_payoff += poff;
         
         // Antithetic variates
-        if (ctx.antithetic_enabled) {
+        if (ctx.get_antithetic()) {
             for (auto& z : normals) z = -z;
             auto anti_path = simulate_gbm_path(ctx, option.spot, option.rate, option.volatility,
-                                                option.time_to_maturity, ctx.num_steps, normals);
+                                                option.time_to_maturity, ctx.get_num_steps(), normals);
             
             bool anti_barrier_hit = false;
             
@@ -105,7 +105,7 @@ double price_barrier_option(Context& ctx, const BarrierOptionData& option) {
         }
     }
     
-    size_t total_paths = ctx.antithetic_enabled ? ctx.num_simulations : effective_paths;
+    size_t total_paths = ctx.get_antithetic() ? ctx.get_num_simulations() : effective_paths;
     double avg_payoff = sum_payoff / total_paths;
     return discount_factor(option.rate, option.time_to_maturity) * avg_payoff;
 }

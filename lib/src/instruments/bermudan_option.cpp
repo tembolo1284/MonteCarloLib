@@ -9,7 +9,7 @@ namespace mcoptions {
 
 double price_bermudan_option(Context& ctx, const BermudanOptionData& option) {
     // Similar to American but only exercise on specific dates
-    size_t num_paths = ctx.num_simulations;
+    size_t num_paths = ctx.get_num_simulations();
     size_t num_exercise_dates = option.exercise_dates.size();
     
     if (num_exercise_dates == 0) {
@@ -18,9 +18,9 @@ double price_bermudan_option(Context& ctx, const BermudanOptionData& option) {
                            option.volatility, option.time_to_maturity, option.type};
         double final_payoff = 0.0;
         for (size_t i = 0; i < num_paths; ++i) {
-            auto normals = generate_normal_samples(ctx.rng, ctx.num_steps);
+            auto normals = generate_normal_samples(ctx.get_rng(), ctx.get_num_steps());
             auto path = simulate_gbm_path(ctx, option.spot, option.rate, option.volatility,
-                                           option.time_to_maturity, ctx.num_steps, normals);
+                                           option.time_to_maturity, ctx.get_num_steps(), normals);
             final_payoff += payoff(path.back(), option.strike, option.type);
         }
         return discount_factor(option.rate, option.time_to_maturity) * (final_payoff / num_paths);
@@ -29,15 +29,15 @@ double price_bermudan_option(Context& ctx, const BermudanOptionData& option) {
     // Generate all paths
     std::vector<std::vector<double>> all_paths(num_paths);
     for (size_t i = 0; i < num_paths; ++i) {
-        auto normals = generate_normal_samples(ctx.rng, ctx.num_steps);
+        auto normals = generate_normal_samples(ctx.get_rng(), ctx.get_num_steps());
         all_paths[i] = simulate_gbm_path(ctx, option.spot, option.rate, option.volatility,
-                                          option.time_to_maturity, ctx.num_steps, normals);
+                                          option.time_to_maturity, ctx.get_num_steps(), normals);
     }
     
     // Map exercise dates to step indices
     std::vector<size_t> exercise_steps;
     for (double ex_date : option.exercise_dates) {
-        size_t step = static_cast<size_t>((ex_date / option.time_to_maturity) * ctx.num_steps);
+        size_t step = static_cast<size_t>((ex_date / option.time_to_maturity) * ctx.get_num_steps());
         exercise_steps.push_back(step);
     }
     

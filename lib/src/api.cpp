@@ -22,56 +22,51 @@ void mco_context_free(mco_context_t* ctx) {
 
 void mco_context_set_seed(mco_context_t* ctx, uint64_t seed) {
     Context* context = reinterpret_cast<Context*>(ctx);
-    context->seed = seed;
-    context->reset_rng();
+    context->set_seed(seed);
 }
 
 void mco_context_set_num_simulations(mco_context_t* ctx, uint64_t n) {
     Context* context = reinterpret_cast<Context*>(ctx);
-    context->num_simulations = n;
+    context->set_num_simulations(n);
 }
 
 void mco_context_set_num_steps(mco_context_t* ctx, uint64_t n) {
     Context* context = reinterpret_cast<Context*>(ctx);
-    context->num_steps = n;
+    context->set_num_steps(n);
 }
 
 void mco_context_set_antithetic(mco_context_t* ctx, int enabled) {
     Context* context = reinterpret_cast<Context*>(ctx);
-    context->antithetic_enabled = (enabled != 0);
+    context->set_antithetic(enabled != 0);
 }
 
 void mco_context_set_importance_sampling(mco_context_t* ctx, int enabled, double drift_shift) {
     Context* context = reinterpret_cast<Context*>(ctx);
-    context->importance_sampling_enabled = (enabled != 0);
-    context->drift_shift = drift_shift;
+    context->set_importance_sampling(enabled != 0, drift_shift);
 }
 
 // Variance Reduction
 void mco_context_set_control_variates(mco_context_t* ctx, int enabled) {
     Context* context = reinterpret_cast<Context*>(ctx);
-    context->control_variates_enabled = (enabled != 0);
+    context->set_control_variates(enabled != 0);
 }
 
 void mco_context_set_stratified_sampling(mco_context_t* ctx, int enabled) {
     Context* context = reinterpret_cast<Context*>(ctx);
-    context->stratified_sampling_enabled = (enabled != 0);
+    context->set_stratified_sampling(enabled != 0);
 }
 
 // Model Selection
 void mco_context_set_model(mco_context_t* ctx, int model) {
     Context* context = reinterpret_cast<Context*>(ctx);
-    context->model = static_cast<Context::Model>(model);
+    context->set_model(static_cast<Context::Model>(model));
 }
 
 void mco_context_set_sabr_params(mco_context_t* ctx, 
                                  double alpha, double beta, 
                                  double rho, double nu) {
     Context* context = reinterpret_cast<Context*>(ctx);
-    context->sabr_alpha = alpha;
-    context->sabr_beta = beta;
-    context->sabr_rho = rho;
-    context->sabr_nu = nu;
+    context->set_sabr_params(alpha, beta, rho, nu);
 }
 
 // European Options
@@ -209,7 +204,7 @@ double mco_european_call_tree(mco_context_t* ctx, double spot, double strike,
 // ============================================================================
 
 double mco_lsm_american_call(
-    MCOContext* ctx,
+    mco_context* ctx,
     double spot,
     double strike,
     double rate,
@@ -227,13 +222,13 @@ double mco_lsm_american_call(
     option.rate = rate;
     option.volatility = volatility;
     option.time_to_maturity = time_to_maturity;
-    option.is_call = true;
+    option.type = OptionType::Call;  // Changed from is_call
     
     return price_american_call_lsm(*context, option, num_exercise_dates);
 }
 
 double mco_lsm_american_put(
-    MCOContext* ctx,
+    mco_context* ctx,
     double spot,
     double strike,
     double rate,
@@ -251,13 +246,13 @@ double mco_lsm_american_put(
     option.rate = rate;
     option.volatility = volatility;
     option.time_to_maturity = time_to_maturity;
-    option.is_call = false;
+    option.type = OptionType::Put;  // Changed from is_call
     
     return price_american_put_lsm(*context, option, num_exercise_dates);
 }
 
 double mco_lsm_american_call_default(
-    MCOContext* ctx,
+    mco_context* ctx,
     double spot,
     double strike,
     double rate,
@@ -268,7 +263,7 @@ double mco_lsm_american_call_default(
 }
 
 double mco_lsm_american_put_default(
-    MCOContext* ctx,
+    mco_context* ctx,
     double spot,
     double strike,
     double rate,

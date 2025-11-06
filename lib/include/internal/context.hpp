@@ -8,9 +8,15 @@ namespace mcoptions {
 
 class Context {
 public:
+    enum class Model {
+        BlackScholes,
+        Heston,
+        SABR
+    };
+
     Context();
     ~Context() = default;
-
+    
     // Monte Carlo settings
     void set_num_simulations(size_t n);
     size_t get_num_simulations() const;
@@ -24,12 +30,29 @@ public:
     void set_control_variates(bool enabled);
     bool get_control_variates() const;
     
-    // Binomial tree settings (NEW)
+    void set_stratified_sampling(bool enabled);
+    bool get_stratified_sampling() const;
+    
+    void set_importance_sampling(bool enabled, double drift_shift);
+    bool get_importance_sampling() const;
+    double get_drift_shift() const;
+    
+    // Model settings
+    void set_model(Model model);
+    Model get_model() const;
+    
+    void set_sabr_params(double alpha, double beta, double rho, double nu);
+    double get_sabr_alpha() const;
+    double get_sabr_beta() const;
+    double get_sabr_rho() const;
+    double get_sabr_nu() const;
+    
+    // Binomial tree settings
     void set_binomial_steps(size_t n);
     size_t get_binomial_steps() const;
     
     // Random number generation
-    std::mt19937& get_rng();
+    std::mt19937_64& get_rng();
     void set_seed(unsigned int seed);
 
 private:
@@ -38,12 +61,22 @@ private:
     size_t num_steps_;
     bool antithetic_enabled_;
     bool control_variates_enabled_;
+    bool stratified_sampling_enabled_;
+    bool importance_sampling_enabled_;
+    double drift_shift_;
     
-    // Binomial tree configuration (NEW)
-    size_t binomial_steps_;  // Default: 100
+    // Model configuration
+    Model model_;
+    double sabr_alpha_;
+    double sabr_beta_;
+    double sabr_rho_;
+    double sabr_nu_;
+    
+    // Binomial tree configuration
+    size_t binomial_steps_;
     
     // Random number generator
-    std::mt19937 rng_;
+    std::mt19937_64 rng_;
 };
 
 }
