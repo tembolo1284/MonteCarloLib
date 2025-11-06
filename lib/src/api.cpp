@@ -200,6 +200,128 @@ double mco_european_call_tree(mco_context_t* ctx, double spot, double strike,
 }
 
 // ============================================================================
+// Binomial Tree Methods
+// ============================================================================
+
+void mco_context_set_binomial_steps(mco_context_t* ctx, size_t n) {
+    Context* context = reinterpret_cast<Context*>(ctx);
+    context->set_binomial_steps(n);
+}
+
+size_t mco_context_get_binomial_steps(mco_context_t* ctx) {
+    Context* context = reinterpret_cast<Context*>(ctx);
+    return context->get_binomial_steps();
+}
+
+// For now, these are stubs that return -1.0 (not implemented)
+// You'll implement them when you add the actual binomial tree pricing logic
+
+double mco_binomial_european_call(
+    mco_context_t* ctx,
+    double spot,
+    double strike,
+    double rate,
+    double volatility,
+    double time_to_maturity
+) {
+    Context* context = reinterpret_cast<Context*>(ctx);
+    size_t steps = context->get_binomial_steps();
+    return mco_binomial_european_call_steps(ctx, spot, strike, rate, volatility, time_to_maturity, steps);
+}
+
+double mco_binomial_european_put(
+    mco_context_t* ctx,
+    double spot,
+    double strike,
+    double rate,
+    double volatility,
+    double time_to_maturity
+) {
+    Context* context = reinterpret_cast<Context*>(ctx);
+    size_t steps = context->get_binomial_steps();
+    return mco_binomial_european_put_steps(ctx, spot, strike, rate, volatility, time_to_maturity, steps);
+}
+
+double mco_binomial_american_call(
+    mco_context_t* ctx,
+    double spot,
+    double strike,
+    double rate,
+    double volatility,
+    double time_to_maturity
+) {
+    Context* context = reinterpret_cast<Context*>(ctx);
+    size_t steps = context->get_binomial_steps();
+    return mco_binomial_american_call_steps(ctx, spot, strike, rate, volatility, time_to_maturity, steps);
+}
+
+double mco_binomial_american_put(
+    mco_context_t* ctx,
+    double spot,
+    double strike,
+    double rate,
+    double volatility,
+    double time_to_maturity
+) {
+    Context* context = reinterpret_cast<Context*>(ctx);
+    size_t steps = context->get_binomial_steps();
+    return mco_binomial_american_put_steps(ctx, spot, strike, rate, volatility, time_to_maturity, steps);
+}
+
+// The _steps versions - these are the actual implementations (currently stubs)
+double mco_binomial_european_call_steps(
+    mco_context_t* ctx,
+    double spot,
+    double strike,
+    double rate,
+    double volatility,
+    double time_to_maturity,
+    size_t num_steps
+) {
+    // TODO: Implement binomial tree pricing
+    return -1.0;  // Not implemented yet
+}
+
+double mco_binomial_european_put_steps(
+    mco_context_t* ctx,
+    double spot,
+    double strike,
+    double rate,
+    double volatility,
+    double time_to_maturity,
+    size_t num_steps
+) {
+    // TODO: Implement binomial tree pricing
+    return -1.0;  // Not implemented yet
+}
+
+double mco_binomial_american_call_steps(
+    mco_context_t* ctx,
+    double spot,
+    double strike,
+    double rate,
+    double volatility,
+    double time_to_maturity,
+    size_t num_steps
+) {
+    // TODO: Implement binomial tree pricing
+    return -1.0;  // Not implemented yet
+}
+
+double mco_binomial_american_put_steps(
+    mco_context_t* ctx,
+    double spot,
+    double strike,
+    double rate,
+    double volatility,
+    double time_to_maturity,
+    size_t num_steps
+) {
+    // TODO: Implement binomial tree pricing
+    return -1.0;  // Not implemented yet
+}
+
+// ============================================================================
 // LSM American Option Pricing
 // ============================================================================
 
