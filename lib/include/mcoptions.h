@@ -92,6 +92,92 @@ MCO_API double mco_european_call_tree(mco_context_t* ctx, double spot, double st
                                       double rate, double volatility, double time_to_maturity,
                                       int num_steps);
 
+// ============================================================================
+// Least Squares Monte Carlo (LSM) for American Options (NEW)
+// ============================================================================
+
+/**
+ * Price an American call option using Least Squares Monte Carlo (LSM)
+ * 
+ * LSM uses Monte Carlo simulation with regression to estimate continuation values
+ * at each potential exercise date. This method:
+ * - Simulates forward price paths
+ * - Works backwards through time using regression
+ * - Compares continuation value vs immediate exercise
+ * - Optimal for path-dependent or high-dimensional problems
+ * 
+ * Requires more paths than standard MC (recommend 50,000+)
+ * Configure via: mco_context_set_num_simulations()
+ * 
+ * @param ctx Context with Monte Carlo configuration
+ * @param spot Current stock price
+ * @param strike Strike price
+ * @param rate Risk-free interest rate (annualized)
+ * @param volatility Volatility (annualized)
+ * @param time_to_maturity Time to maturity in years
+ * @param num_exercise_dates Number of possible exercise dates (default: 50)
+ * @return American call price
+ */
+double mco_lsm_american_call(
+    MCOContext* ctx,
+    double spot,
+    double strike,
+    double rate,
+    double volatility,
+    double time_to_maturity,
+    size_t num_exercise_dates
+);
+
+/**
+ * Price an American put option using Least Squares Monte Carlo (LSM)
+ * 
+ * American puts often exhibit early exercise when deep in-the-money.
+ * LSM captures this behavior through regression-based decision rules.
+ * 
+ * @param ctx Context with Monte Carlo configuration
+ * @param spot Current stock price
+ * @param strike Strike price
+ * @param rate Risk-free interest rate (annualized)
+ * @param volatility Volatility (annualized)
+ * @param time_to_maturity Time to maturity in years
+ * @param num_exercise_dates Number of possible exercise dates (default: 50)
+ * @return American put price
+ */
+double mco_lsm_american_put(
+    MCOContext* ctx,
+    double spot,
+    double strike,
+    double rate,
+    double volatility,
+    double time_to_maturity,
+    size_t num_exercise_dates
+);
+
+/**
+ * Price an American call with default number of exercise dates (50)
+ * Convenience function for quick usage
+ */
+double mco_lsm_american_call_default(
+    MCOContext* ctx,
+    double spot,
+    double strike,
+    double rate,
+    double volatility,
+    double time_to_maturity
+);
+
+/**
+ * Price an American put with default number of exercise dates (50)
+ * Convenience function for quick usage
+ */
+double mco_lsm_american_put_default(
+    MCOContext* ctx,
+    double spot,
+    double strike,
+    double rate,
+    double volatility,
+    double time_to_maturity
+);
 
 
 #ifdef __cplusplus

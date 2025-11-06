@@ -1,5 +1,6 @@
 #include "mcoptions.h"
 #include "internal/context.hpp"
+#include "internal/methods/least_squares_monte_carlo.hpp"
 #include "internal/instruments/european_option.hpp"
 #include "internal/instruments/asian_option.hpp"
 #include "internal/instruments/american_option.hpp"
@@ -201,4 +202,78 @@ double mco_european_call_tree(mco_context_t* ctx, double spot, double strike,
                               double rate, double volatility, double time_to_maturity,
                               int num_steps) {
     return -1.0;  // Not implemented
+}
+
+// ============================================================================
+// LSM American Option Pricing
+// ============================================================================
+
+double mco_lsm_american_call(
+    MCOContext* ctx,
+    double spot,
+    double strike,
+    double rate,
+    double volatility,
+    double time_to_maturity,
+    size_t num_exercise_dates
+) {
+    if (!ctx) return -1.0;
+    
+    Context* context = reinterpret_cast<Context*>(ctx);
+    
+    OptionData option;
+    option.spot = spot;
+    option.strike = strike;
+    option.rate = rate;
+    option.volatility = volatility;
+    option.time_to_maturity = time_to_maturity;
+    option.is_call = true;
+    
+    return price_american_call_lsm(*context, option, num_exercise_dates);
+}
+
+double mco_lsm_american_put(
+    MCOContext* ctx,
+    double spot,
+    double strike,
+    double rate,
+    double volatility,
+    double time_to_maturity,
+    size_t num_exercise_dates
+) {
+    if (!ctx) return -1.0;
+    
+    Context* context = reinterpret_cast<Context*>(ctx);
+    
+    OptionData option;
+    option.spot = spot;
+    option.strike = strike;
+    option.rate = rate;
+    option.volatility = volatility;
+    option.time_to_maturity = time_to_maturity;
+    option.is_call = false;
+    
+    return price_american_put_lsm(*context, option, num_exercise_dates);
+}
+
+double mco_lsm_american_call_default(
+    MCOContext* ctx,
+    double spot,
+    double strike,
+    double rate,
+    double volatility,
+    double time_to_maturity
+) {
+    return mco_lsm_american_call(ctx, spot, strike, rate, volatility, time_to_maturity, 50);
+}
+
+double mco_lsm_american_put_default(
+    MCOContext* ctx,
+    double spot,
+    double strike,
+    double rate,
+    double volatility,
+    double time_to_maturity
+) {
+    return mco_lsm_american_put(ctx, spot, strike, rate, volatility, time_to_maturity, 50);
 }

@@ -1,40 +1,49 @@
 #ifndef MCOPTIONS_CONTEXT_HPP
 #define MCOPTIONS_CONTEXT_HPP
 
-#include <cstdint>
 #include <random>
+#include <cstddef>
 
 namespace mcoptions {
 
-struct Context {
-    // RNG settings
-    uint64_t seed;
-    uint64_t num_simulations;
-    uint64_t num_steps;
-    std::mt19937_64 rng;
-    
-    // Variance Reduction techniques
-    bool antithetic_enabled;              // Existing
-    bool importance_sampling_enabled;     // Existing
-    double drift_shift;                   // Existing (for importance sampling)
-    bool control_variates_enabled;        // NEW
-    bool stratified_sampling_enabled;     // NEW
-    
-    // Model selection
-    enum class Model {
-        GBM,     // Geometric Brownian Motion (current)
-        SABR     // Stochastic Alpha Beta Rho (NEW)
-    };
-    Model model;
-    
-    // SABR parameters (only used if model == SABR)
-    double sabr_alpha;  // Initial volatility
-    double sabr_beta;   // CEV exponent (0=normal, 0.5=CIR, 1=lognormal)
-    double sabr_rho;    // Correlation between forward and vol
-    double sabr_nu;     // Volatility of volatility
-    
+class Context {
+public:
     Context();
-    void reset_rng();
+    ~Context() = default;
+
+    // Monte Carlo settings
+    void set_num_simulations(size_t n);
+    size_t get_num_simulations() const;
+    
+    void set_num_steps(size_t n);
+    size_t get_num_steps() const;
+    
+    void set_antithetic(bool enabled);
+    bool get_antithetic() const;
+    
+    void set_control_variates(bool enabled);
+    bool get_control_variates() const;
+    
+    // Binomial tree settings (NEW)
+    void set_binomial_steps(size_t n);
+    size_t get_binomial_steps() const;
+    
+    // Random number generation
+    std::mt19937& get_rng();
+    void set_seed(unsigned int seed);
+
+private:
+    // Monte Carlo configuration
+    size_t num_simulations_;
+    size_t num_steps_;
+    bool antithetic_enabled_;
+    bool control_variates_enabled_;
+    
+    // Binomial tree configuration (NEW)
+    size_t binomial_steps_;  // Default: 100
+    
+    // Random number generator
+    std::mt19937 rng_;
 };
 
 }

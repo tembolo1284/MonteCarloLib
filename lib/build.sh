@@ -63,7 +63,12 @@ setup_venv() {
         echo "  Installing cffi..."
         pip install -q cffi
     fi
-    
+ 
+    if ! python -c "import scipy" 2>/dev/null; then
+        echo "  Installing scipy..."
+        pip install -q scipy
+    fi
+ 
     echo "✓ Dependencies ready"
 }
 

@@ -12,6 +12,7 @@ Context::Context()
     , drift_shift(0.0)
     , control_variates_enabled(false)
     , stratified_sampling_enabled(false)
+    , binomial_steps_(100)  // NEW: Default 100 steps for binomial tree
     , model(Model::GBM)
     , sabr_alpha(0.0)
     , sabr_beta(0.0)
@@ -22,6 +23,15 @@ Context::Context()
 
 void Context::reset_rng() {
     rng.seed(seed);
+}
+
+// NEW: Binomial tree configuration
+void Context::set_binomial_steps(size_t n) {
+    binomial_steps_ = n;
+}
+
+size_t Context::get_binomial_steps() const {
+    return binomial_steps_;
 }
 
 }
